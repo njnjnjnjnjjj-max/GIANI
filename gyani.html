@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giani's Ice Cream - The Art of Indulgence</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;600&display=swap');
+
+        :root {
+            --brand-red: #D32F2F; /* Giani Red */
+            --brand-gold: #FFD700;
+            --deep-choco: #3E2723;
+            --cream: #FFFDD0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+        }
+
+        /* The Video Player Container */
+        #video-container {
+            width: 100%;
+            max-width: 1080px;
+            aspect-ratio: 16/9;
+            background-color: black;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(211, 47, 47, 0.3);
+            border: 1px solid #333;
+        }
+
+        /* Visual Layers */
+        .layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Background Image & Ken Burns Effect */
+        #scene-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 1s ease-in-out;
+            filter: brightness(0.85) contrast(1.2);
+        }
+
+        .ken-burns {
+            animation: zoomIn 10s linear forwards;
+        }
+        
+        .ken-burns-fast {
+            animation: zoomIn 3s linear forwards;
+        }
+
+        @keyframes zoomIn {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        /* Overlays / FX */
+        #overlay-fx {
+            background: radial-gradient(circle, transparent 40%, black 100%);
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        .spotlight-fx {
+            background: radial-gradient(circle at center, transparent 10%, #000 70%) !important;
+            opacity: 0.9 !important;
+        }
+
+        .frost-fx {
+            background: url('https://www.transparenttextures.com/patterns/black-felt.png'); /* Texture simulation */
+            box-shadow: inset 0 0 100px rgba(255,255,255,0.2);
+            mix-blend-mode: overlay;
+        }
+
+        /* Typography */
+        #main-text {
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .headline {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .headline span {
+            color: var(--brand-gold);
+            font-style: italic;
+        }
+
+        .headline.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Subtitles / Voiceover representation */
+        #subtitle-bar {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .subtitle {
+            background: rgba(0, 0, 0, 0.6);
+            color: #eee;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* Progress Bar */
+        #progress-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #333;
+            z-index: 30;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--brand-red);
+        }
+
+        /* Controls */
+        #controls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            cursor: pointer;
+        }
+        
+        button {
+            background: var(--brand-red);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: #b71c1c;
+        }
+
+        /* Logo Simulation */
+        .brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            color: white;
+            background: var(--brand-red);
+            padding: 20px 40px;
+            border-radius: 50%;
+            border: 4px solid white;
+        }
+
+        /* Outro styles */
+        .outro-bg {
+            background-color: var(--brand-red) !important;
+            background-image: none !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="video-container">
+        <!-- Image Layer -->
+        <img id="scene-image" src="" alt="Scene Visual">
+        
+        <!-- Effects Layer -->
+        <div id="overlay-fx" class="layer"></div>
+
+        <!-- Text Layer -->
+        <div id="main-text" class="layer">
+            <div id="text-content" class="headline"></div>
+        </div>
+
+        <!-- Subtitles -->
+        <div id="subtitle-bar">
+            <span id="subtitle-text" class="subtitle"></span>
+        </div>
+
+        <!-- Progress -->
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <!-- Start Button -->
+        <div id="controls">
+            <button onclick="startVideo()">Play Cinematic</button>
+        </div>
+    </div>
+
+    <script>
+        // Image sources (using Unsplash for high quality placeholders matching description)
+        const images = {
+            black: "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&w=1600&q=80", // Dark texture
+            chocolate: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1600&q=80", // Dark Choco
+            scoop: "https://images.unsplash.com/photo-1580915411954-282cb1b0d780?auto=format&fit=crop&w=1600&q=80", // Scoop detail
+            sundae: "https://images.unsplash.com/photo-1558500122-38d97607a759?auto=format&fit=crop&w=1600&q=80", // Sundae
+            modern: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=1600&q=80", // Red/Modern
+            kulfi: "https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?auto=format&fit=crop&w=1600&q=80", // Pista/Kulfi vibe
+            fruit: "https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=1600&q=80", // Fruit/Sorbet
+            red: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", // 1px Red pixel placeholder
+        };
+
+        // The Script Data
+        const scriptData = [
+            {
+                start: 0,
+                duration: 5,
+                img: images.chocolate,
+                text: "Pure. Creamy. Iconic.",
+                vo: "True happiness... isn't complicated.",
+                fx: "spotlight-fx",
+                anim: "ken-burns"
+            },
+            {
+                start: 5,
+                duration: 7,
+                img: images.scoop,
+                text: "Almond Choco Fudge",
+                vo: "It’s rich Belgian Chocolate. It’s the crunch of Almond Choco Fudge.",
+                fx: "",
+                anim: "ken-burns"
+            },
+            {
+                start: 12,
+                duration: 8,
+                img: images.sundae,
+                text: "The <span>Giani Special</span>",
+                vo: "From our legendary Giani Special... to the loaded Chunky Munky.",
+                fx: "",
+                anim: "ken-burns"
+            },
+            {
+                start: 20,
+                duration: 3.3,
+                img: "https://images.unsplash.com/photo-1629325983424-4d6423403248?auto=format&fit=crop&w=1600&q=80", // Biscoff vibe
+                text: "Lotus Biscoff",
+                vo: "Timeless tradition meets modern desire. Lotus Biscoff...",
+                fx: "",
+                anim: "ken-burns-fast"
+            },
+            {
+                start: 23.3,
+                duration: 3.3,
+                img: images.modern,
+                text: "Red Velvet",
+                vo: "...Red Velvet...",
+                fx: "",
+                anim: "ken-burns-fast"
+            },
+            {
+                start: 26.6,
+                duration: 3.4,
+                img: "https://plus.unsplash.com/premium_photo-1695028377038-f1f62c694669?q=80&w=1600&auto=format&fit=crop", // Milk Cake Vibe
+                text: "Desi Milk Cake",
+                vo: "...and Desi Milk Cake.",
+                fx: "",
+                anim: "ken-burns-fast"
+            },
+            {
+                start: 30,
+                duration: 8,
+                img: images.kulfi,
+                text: "<span>Royal</span> Kesar Pista",
+                vo: "Royal Kesar Pista... and the authentic chill of Stick Kulfi.",
+                fx: "frost-fx",
+                anim: "ken-burns"
+            },
+            {
+                start: 38,
+                duration: 7,
+                img: images.fruit,
+                text: "Fresh. Fruity. Flawless.",
+                vo: "Fresh. Fruity. Flawless.",
+                fx: "",
+                anim: "ken-burns"
+            },
+            {
+                start: 45,
+                duration: 10,
+                img: "", // Will force background color
+                bgColor: "#D32F2F",
+                text: "<div class='brand-logo'>Giani's</div><br><span style='font-size:1.5rem; color:white;'>Since 1956</span>",
+                vo: "No fillers. Just pure ice cream.",
+                fx: "",
+                anim: ""
+            },
+            {
+                start: 55,
+                duration: 5,
+                img: "", 
+                bgColor: "#D32F2F",
+                text: "Taste the Legacy",
+                vo: "Giani’s. The taste of love.",
+                fx: "",
+                anim: ""
+            }
+        ];
+
+        let currentTime = 0;
+        let timer;
+        const totalDuration = 60; // seconds
+
+        // DOM Elements
+        const container = document.getElementById('video-container');
+        const imgEl = document.getElementById('scene-image');
+        const overlayEl = document.getElementById('overlay-fx');
+        const textEl = document.getElementById('text-content');
+        const subEl = document.getElementById('subtitle-text');
+        const progressBar = document.getElementById('progress-bar');
+        const controls = document.getElementById('controls');
+
+        function startVideo() {
+            controls.style.display = 'none';
+            currentTime = 0;
+            runSequence();
+            
+            // Progress Bar Logic
+            const progressInterval = setInterval(() => {
+                currentTime += 0.1;
+                const pct = (currentTime / totalDuration) * 100;
+                progressBar.style.width = pct + "%";
+                
+                if (currentTime >= totalDuration) {
+                    clearInterval(progressInterval);
+                    finishVideo();
+                }
+            }, 100);
+        }
+
+        function runSequence() {
+            let delay = 0;
+
+            scriptData.forEach((scene, index) => {
+                setTimeout(() => {
+                    playScene(scene);
+                }, scene.start * 1000);
+            });
+        }
+
+        function playScene(scene) {
+            // 1. Image Transition (Crossfade)
+            imgEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                // Update Image source or Background color
+                if (scene.img) {
+                    imgEl.src = scene.img;
+                    imgEl.style.display = 'block';
+                    container.style.backgroundColor = 'black';
+                } else if (scene.bgColor) {
+                    imgEl.style.display = 'none';
+                    container.style.backgroundColor = scene.bgColor;
+                }
+
+                // Reset Animation
+                imgEl.classList.remove('ken-burns', 'ken-burns-fast');
+                void imgEl.offsetWidth; // Trigger reflow
+                if (scene.anim) imgEl.classList.add(scene.anim);
+
+                // Apply Special FX
+                overlayEl.className = 'layer'; // Reset
+                if (scene.fx) overlayEl.classList.add(scene.fx);
+
+                // Show Image
+                imgEl.style.opacity = 1;
+
+            }, 200); // Short delay for fade out/in feel
+
+            // 2. Text Update
+            textEl.classList.remove('visible');
+            setTimeout(() => {
+                textEl.innerHTML = scene.text;
+                textEl.classList.add('visible');
+            }, 500);
+
+            // 3. Subtitle / VO Update
+            subEl.style.opacity = 0;
+            setTimeout(() => {
+                subEl.innerText = scene.vo;
+                subEl.style.opacity = 1;
+            }, 300);
+        }
+
+        function finishVideo() {
+            setTimeout(() => {
+                controls.style.display = 'block';
+                controls.querySelector('button').innerText = "Replay";
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
